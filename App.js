@@ -2,12 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 import * as Location from 'expo-location';
+import { Fontisto } from '@expo/vector-icons';
 
 // 현재 expo와 연결된 기기의 스크린 크기를 알려주는 API
 // width: SCEEEN_WIDTH를 styled에 넣으면 스크린 크기에 맞게 바뀐다.
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const API_KEY = "65d60f1205d97ccd938fb459842c61c1";
+
+const icons = {
+  Clouds: "cloudy",
+  Clear: "day-sunny",
+  Rain: "rains",
+  Atmosphere: "cloudy-gusts",
+  Snow: "snow",
+  Drizzle: "rain",
+  Thunderstorm: "lightning",
+};
 
 export default function App() {
 
@@ -41,7 +52,7 @@ export default function App() {
 
      const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`)
      const json = await response.json();
-     console.log(json)
+    //  console.log(json)
 
      setDays(
       json.list.filter((weather) => {
@@ -77,14 +88,24 @@ export default function App() {
             persistentScrollbar = 스크롤바가 투명하지 않게 해줌(Android)
             indicatorStyle = "색" 스크롤바 색지정(IOS) */}
         {days.length === 0 ? (
-          <View style={styles.day}>
+          <View style={{...styles.day, alignItems: "center"}}>
             <ActivityIndicator color="white" style={{marginTop: 10}} size="large"/>
           </View> 
           ) : (
             days.map((day, index) => 
             <View key={index} style={styles.day}>
               {/* 소수점 한자리까지 표시 */}
-              <Text style={styles.temp}>{parseFloat(day.main.temp).toFixed(1)}</Text>
+              <View style={{
+                flexDirection: "row", 
+                alignItems: "center", 
+                width: "100%",
+                justifyContent:"flex-start",
+              }}>
+                <Text style={styles.temp}>
+                  {parseFloat(day.main.temp).toFixed(1)}
+                </Text>
+                <Fontisto name={icons[day.weather[0].main]} size={68} color="white" />
+              </View>
               <Text style={styles.description}>{day.weather[0].main}</Text>
               <Text style={styles.tinyText}>{day.weather[0].description}</Text>
             </View>)
@@ -118,7 +139,9 @@ const styles = StyleSheet.create({
   city: {
     flex: 1,
     justifyContent: "center",
-    alignItems: 'center'
+    alignItems: 'center',
+    marginTop: 30,
+    marginBottom: 40
   },
   cityName: {
     color: "white",
@@ -127,28 +150,31 @@ const styles = StyleSheet.create({
   },
   districtName: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 28,
   },
   weather: {
     
   },
   day: {
     width: SCREEN_WIDTH,
-    alignItems: 'center',
   },
   temp: {
-    fontSize: 178,
+    fontSize: 108,
     marginTop: 50,
+    marginLeft: 10,
+    marginRight: 80,
     color: "white",
   },
   description: {
-    fontSize: 60,
-    marginTop: -30,
+    fontSize: 38,
+    marginTop: -20,
+    marginLeft: 15,
     color: "white",
   },
   tinyText: {
     color: "white",
-    fontSize: 20,
+    fontSize: 18,
+    marginLeft: 17,
   }
 });
 
